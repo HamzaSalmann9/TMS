@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
 const mongoose = require('mongoose');
 const routes = require('./routes/userRoutes');
 const intersectionRouter = require('./routes/intersectionRoutes');
@@ -21,6 +22,7 @@ database.once('connected', () => {
 })
 
 const app = express();
+app.use(cors());
 app.use(cookieParser());
 app.use(express.json());
 app.use('/user', routes);

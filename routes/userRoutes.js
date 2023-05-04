@@ -115,7 +115,7 @@ router.get('/getAllUsers', verifyToken, async (req, res) => {
       httpOnly: true,
       maxAge: maxAge * 1000, // 3hrs in ms
     });
-    const data = await User.find();
+    const data = await User.find({}, { password: 0 }); // exclude password field
     res.json(data);
     
   } catch (error) {
@@ -131,7 +131,7 @@ router.get('/getUser', verifyToken, async (req, res) => {
       maxAge: maxAge * 1000, // 3hrs in ms
     });
 
-    const user = await User.findOne({ _id: req.query.id });
+    const user = await User.findOne({ _id: req.query.id },{ password: 0 });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }

@@ -111,6 +111,9 @@ router.post('/login', async (req, res) => {
 const maxAge = 10800; // 3 hours in seconds
 router.get('/getAllUsers', verifyToken, async (req, res) => {
   try {
+    if (req.user.role !== 'Admin') {
+      return res.status(403).json({ message: 'Only Admin Access' });
+    }
     res.cookie("jwt", res.locals.token, {
       httpOnly: true,
       maxAge: maxAge * 1000, // 3hrs in ms
@@ -126,6 +129,9 @@ router.get('/getAllUsers', verifyToken, async (req, res) => {
 // GET by ID method 
 router.get('/getUser', verifyToken, async (req, res) => {
   try {
+    if (req.user.role !== 'Admin') {
+      return res.status(403).json({ message: 'Only Admin Access' });
+    }
     res.cookie("jwt", res.locals.token, {
       httpOnly: true,
       maxAge: maxAge * 1000, // 3hrs in ms

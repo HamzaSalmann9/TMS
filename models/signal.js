@@ -2,10 +2,6 @@ const mongoose = require('mongoose');
 
 
 const signalSchema = new mongoose.Schema({
-    _id:{
-        required: true,
-        type:Number,
-    },
     location:{
         lat:{
             required: true,

@@ -1,44 +1,24 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const Signal = require('./signal');
 
-const signalSchema = new mongoose.Schema({
-    _id:{
-        required: true,
-        type:Number,
+const intersectionSchema = new Schema({
+  name: {
+    required: true,
+    type: String,
+  },
+  location: {
+    lat: {
+      required: true,
+      type: Number,
     },
-    location:{
-        lat:{
-            required: true,
-            type:Number,
-        },
-        long:{
-            required: true,
-            type:Number,
-        },
-        
+    long: {
+      required: true,
+      type: Number,
     },
-    stream_link:{
-        required: true,
-        type:String,
-    },
+  },
+  signals:  [{ type : Schema.Types.ObjectId, ref: 'Signal' }],
+
 });
-
-const intersectionSchema = new mongoose.Schema({
-    name:{
-        required: true,
-        type:String
-    },
-    location:{
-        lat:{
-            required: true,
-            type:Number,
-        },
-        long:{
-            required: true,
-            type:Number,
-        },
-    },
-    signals:[signalSchema]
-});
-
 
 module.exports = mongoose.model('Intersection', intersectionSchema);

@@ -1,14 +1,26 @@
 const express = require('express');
 const Intersection = require('../models/intersection');
+const Signal = require('../models/signal');
+const verifyToken = require('./middleware');
 
 const router = express.Router();
+const maxAge = 10800; // 3 hours in seconds
 
-// Post Method
-// Post Method
-router.post('/post', async (req, res) => {
+router.post('/addIntersection', verifyToken, async (req, res) => {
+  res.cookie('jwt', res.locals.token, {
+    httpOnly: true,
+    maxAge: maxAge * 1000, // 3hrs in ms
+  });
   const existingData = await Intersection.findOne({ _id: req.body._id });
   if (existingData) {
     return res.status(409).json({ message: 'Document with same ID already exists' });
+  }
+
+  // Check if all signals exist
+  const signalIds = req.body.signals;
+  const signals = await Signal.find({ _id: { $in: signalIds } });
+  if (signals.length !== signalIds.length) {
+    return res.status(400).json({ message: 'One or more signals do not exist' });
   }
 
   const data = new Intersection({
@@ -18,7 +30,7 @@ router.post('/post', async (req, res) => {
       lat: req.body.location.lat,
       long: req.body.location.long,
     },
-    signals: req.body.signals,
+    signals: signalIds,
   });
 
   try {
@@ -29,40 +41,67 @@ router.post('/post', async (req, res) => {
   }
 });
 
+
 // Get by ID Method
-router.get('/getOne/:id', async (req, res) => {
+router.get('/getAllIntersections', verifyToken, async (req, res) => {
   try {
-    const data = await Intersection.findById(req.params.id);
+    res.cookie("jwt", res.locals.token, {
+      httpOnly: true,
+      maxAge: maxAge * 1000, // 3hrs in ms
+    });
+    const data = await Intersection.find();
     res.json(data);
+    
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
-// Update by ID Method
-router.patch('/update/:id', async (req, res) => {
+router.get('/getIntersection', verifyToken, async (req, res) => {
   try {
-    const id = req.params.id;
-    const updatedData = req.body;
-    const options = { new: true };
+    res.cookie("jwt", res.locals.token, {
+      httpOnly: true,
+      maxAge: maxAge * 1000, // 3hrs in ms
+    });
 
-    const result = await Intersection.findByIdAndUpdate(id, updatedData, options);
+    const user = await Intersection.findOne({ _id: req.query.id });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-    res.send(result);
+    res.json(user);
+    
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 });
 
-// Delete by ID Method
-router.delete('/delete/:id', async (req, res) => {
-  try {
-    const id = req.params.id;
-    const data = await Intersection.findByIdAndDelete(id);
-    res.send(`Document with ${data.name} has been deleted..`);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-});
+
+
+// // Update by ID Method
+// router.patch('/update/:id', async (req, res) => {
+//   try {
+//     const id = req.params.id;
+//     const updatedData = req.body;
+//     const options = { new: true };
+
+//     const result = await Intersection.findByIdAndUpdate(id, updatedData, options);
+
+//     res.send(result);
+//   } catch (error) {
+//     res.status(400).json({ message: error.message });
+//   }
+// });
+
+// // Delete by ID Method
+// router.delete('/delete/:id', async (req, res) => {
+//   try {
+//     const id = req.params.id;
+//     const data = await Intersection.findByIdAndDelete(id);
+//     res.send(`Document with ${data.name} has been deleted..`);
+//   } catch (error) {
+//     res.status(400).json({ message: error.message });
+//   }
+// });
 
 module.exports = router;

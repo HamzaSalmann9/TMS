@@ -109,7 +109,7 @@ router.post('/login', async (req, res) => {
 });
 // GET all method
 const maxAge = 10800; // 3 hours in seconds
-router.get('/getAll', verifyToken, async (req, res) => {
+router.get('/getAllUsers', verifyToken, async (req, res) => {
   try {
     res.cookie("jwt", res.locals.token, {
       httpOnly: true,

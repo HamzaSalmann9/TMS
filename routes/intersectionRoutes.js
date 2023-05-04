@@ -44,6 +44,9 @@ router.post('/addIntersection', verifyToken, async (req, res) => {
 
 // Get by ID Method
 router.get('/getAllIntersections', verifyToken, async (req, res) => {
+  if (req.user.role !== 'Admin') {
+    return res.status(403).json({ message: 'Only Admin Access' });
+  }
   try {
     res.cookie("jwt", res.locals.token, {
       httpOnly: true,
@@ -59,6 +62,9 @@ router.get('/getAllIntersections', verifyToken, async (req, res) => {
 
 router.get('/getIntersection', verifyToken, async (req, res) => {
   try {
+    if (req.user.role !== 'Admin') {
+      return res.status(403).json({ message: 'Only Admin Access' });
+    }
     res.cookie("jwt", res.locals.token, {
       httpOnly: true,
       maxAge: maxAge * 1000, // 3hrs in ms

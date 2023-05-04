@@ -37,6 +37,9 @@ signalRouter.post('/addSignal',verifyToken ,async (req, res) => {
 //Get all Method
 signalRouter.get('/getAllSignals', verifyToken, async (req, res) => {
     try {
+      if (req.user.role !== 'Admin') {
+        return res.status(403).json({ message: 'Only Admin Access' });
+      }
       res.cookie("jwt", res.locals.token, {
         httpOnly: true,
         maxAge: maxAge * 1000, // 3hrs in ms
@@ -52,6 +55,9 @@ signalRouter.get('/getAllSignals', verifyToken, async (req, res) => {
 //Get by ID Method
 signalRouter.get('/getSignal', verifyToken, async (req, res) => {
     try {
+      if (req.user.role !== 'Admin') {
+        return res.status(403).json({ message: 'Only Admin Access' });
+      }
       res.cookie("jwt", res.locals.token, {
         httpOnly: true,
         maxAge: maxAge * 1000, // 3hrs in ms

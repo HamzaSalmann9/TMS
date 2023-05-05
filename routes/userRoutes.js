@@ -8,7 +8,13 @@ const verifyToken = require('./middleware');
 
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password,role } = req.body;
+    const { name, email, password, role } = req.body;
+
+    // Check if email is in the correct format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ message: 'Invalid email format' });
+    }
 
     // Check if user already exists
     const userExists = await User.findOne({ email });
@@ -43,10 +49,15 @@ router.post('/register', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
   
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ message: 'Invalid email format' });
+  }
   // Check if email and password are provided
   if (!email || !password) {
     return res.status(400).json({

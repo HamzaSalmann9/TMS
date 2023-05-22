@@ -17,8 +17,25 @@ const intersectionSchema = new Schema({
       type: Number,
     },
   },
-  signals:  [{ type : Schema.Types.ObjectId, ref: 'Signal' }],
-
-});
+  signals:  [
+    {
+      location:{
+        lat:{
+          required: true,
+          type:Number,
+      },
+      long:{
+          required: true,
+          type:Number,
+      },
+  },
+    stream_link:{
+      required: true,
+      type:String,
+    },
+  },
+],
+},
+);
 
 module.exports = mongoose.model('Intersection', intersectionSchema);

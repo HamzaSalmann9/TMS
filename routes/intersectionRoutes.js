@@ -6,41 +6,45 @@ const verifyToken = require('./middleware');
 const router = express.Router();
 const maxAge = 10800; // 3 hours in seconds
 
+
 router.post('/addIntersection', verifyToken, async (req, res) => {
   res.cookie('jwt', res.locals.token, {
     httpOnly: true,
     maxAge: maxAge * 1000, // 3hrs in ms
   });
-  const existingData = await Intersection.findOne({ _id: req.body._id });
-  if (existingData) {
-    return res.status(409).json({ message: 'Document with same ID already exists' });
-  }
-
-  // Check if all signals exist
-  const signalIds = req.body.signals;
-  const signals = await Signal.find({ _id: { $in: signalIds } });
-  if (signals.length !== signalIds.length) {
-    return res.status(400).json({ message: 'One or more signals do not exist' });
-  }
-
-  const data = new Intersection({
-    name: req.body.name,
-    _id: req.body._id,
-    location: {
-      lat: req.body.location.lat,
-      long: req.body.location.long,
-    },
-    signals: signalIds,
-  });
+  const { signals, name, location } = req.body;
 
   try {
-    const dataToSave = await data.save();
-    res.status(200).json(dataToSave);
+    const existingIntersection = await Intersection.findOne({ name });
+    if (existingIntersection) {
+      return res.status(409).json({ message: 'Intersection with the same name already exists' });
+    }
+
+    const createdSignals = await Promise.all(
+      signals.map(async (signalData) => {
+        const { location, stream_link } = signalData;
+        const existingSignal = await Signal.findOne({ location, stream_link });
+        if (existingSignal) {
+          return existingSignal;
+        } else {
+          const newSignal = new Signal(signalData);
+          return newSignal.save();
+        }
+      })
+    );
+
+    const newIntersection = new Intersection({
+      name,
+      location,
+      signals: createdSignals,
+    });
+
+    const savedIntersection = await newIntersection.save();
+    res.status(200).json(savedIntersection);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 });
-
 
 // Get by ID Method
 router.get('/getAllIntersections', verifyToken, async (req, res) => {

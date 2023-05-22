@@ -8,29 +8,26 @@ const signalRouter = express.Router();
 //Post Method
 
 const maxAge = 10800; // 3 hours in seconds
-signalRouter.post('/addSignal',verifyToken ,async (req, res) => {
-    res.cookie("jwt", res.locals.token, {
-        httpOnly: true,
-        maxAge: maxAge * 1000, // 3hrs in ms
-      });
-      const data = new Signal({
-        vehicleQuantity: req.body.vehicleQuantity,
-        isEmergencyVehicle: req.body.isEmergencyVehicle,
-        location: {
-            lat: req.body.location.lat,
-            long: req.body.location.long,
-            stream_link: req.body.location.stream_link
-        }
-    })
-    
+signalRouter.post('/addSignal', verifyToken, async (req, res) => {
+  res.cookie("jwt", res.locals.token, {
+    httpOnly: true,
+    maxAge: maxAge * 1000, // 3hrs in ms
+  });
 
-    try {
-        const dataToSave = await data.save();
-        res.status(200).json(dataToSave)
-    }
-    catch (error) {
-        res.status(400).json({message: error.message})
-    }
+  const data = new Signal({
+    location: {
+      lat: req.body.location.lat,
+      long: req.body.location.long,
+    },
+    stream_link: req.body.stream_link // Corrected field access
+  });
+
+  try {
+    const dataToSave = await data.save();
+    res.status(200).json(dataToSave);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
 });
 
 

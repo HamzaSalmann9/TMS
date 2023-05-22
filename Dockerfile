@@ -16,4 +16,4 @@ COPY . .
 EXPOSE 3000
 
 # Run the app
-CMD [ "npm", "run", "swagger-autogen" ]
+CMD [ "node", "index.js" ]

@@ -5,10 +5,10 @@
     "title": "REST API",
     "description": ""
   },
-  "host": "localhost:3000",
+  "host": "fypexpress.ahris.ninja",
   "basePath": "/",
   "schemes": [
-    "http"
+    "https"
   ],
   "paths": {
     "/user/register": {
@@ -86,7 +86,7 @@
         }
       }
     },
-    "/user/getAll": {
+    "/user/getAllUsers": {
       "get": {
         "description": "",
         "parameters": [],
@@ -99,6 +99,9 @@
           },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "500": {
             "description": "Internal Server Error"
@@ -126,6 +129,9 @@
           "401": {
             "description": "Unauthorized"
           },
+          "403": {
+            "description": "Forbidden"
+          },
           "404": {
             "description": "Not Found"
           },
@@ -135,7 +141,7 @@
         }
       }
     },
-    "/intersection/post": {
+    "/signal/addSignal": {
       "post": {
         "description": "",
         "parameters": [
@@ -145,16 +151,13 @@
             "schema": {
               "type": "object",
               "properties": {
-                "_id": {
+                "vehicleQuantity": {
                   "example": "any"
                 },
-                "name": {
+                "isEmergencyVehicle": {
                   "example": "any"
                 },
                 "location": {
-                  "example": "any"
-                },
-                "signals": {
                   "example": "any"
                 }
               }
@@ -168,26 +171,28 @@
           "400": {
             "description": "Bad Request"
           },
-          "409": {
-            "description": "Conflict"
+          "401": {
+            "description": "Unauthorized"
           }
         }
       }
     },
-    "/intersection/getOne/{id}": {
+    "/signal/getAllSignals": {
       "get": {
         "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "500": {
             "description": "Internal Server Error"
@@ -195,14 +200,13 @@
         }
       }
     },
-    "/intersection/update/{id}": {
-      "patch": {
+    "/signal/getSignal": {
+      "get": {
         "description": "",
         "parameters": [
           {
             "name": "id",
-            "in": "path",
-            "required": true,
+            "in": "query",
             "type": "string"
           }
         ],
@@ -212,18 +216,94 @@
           },
           "400": {
             "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
     },
-    "/intersection/delete/{id}": {
-      "delete": {
+    "/intersection/addIntersection": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "_id": {
+                  "example": "any"
+                },
+                "signals": {
+                  "example": "any"
+                },
+                "name": {
+                  "example": "any"
+                },
+                "location": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "409": {
+            "description": "Conflict"
+          }
+        }
+      }
+    },
+    "/intersection/getAllIntersections": {
+      "get": {
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/intersection/getIntersection": {
+      "get": {
         "description": "",
         "parameters": [
           {
             "name": "id",
-            "in": "path",
-            "required": true,
+            "in": "query",
             "type": "string"
           }
         ],
@@ -233,6 +313,18 @@
           },
           "400": {
             "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }

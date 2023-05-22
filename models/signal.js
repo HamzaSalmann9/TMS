@@ -11,10 +11,10 @@ const signalSchema = new mongoose.Schema({
             required: true,
             type:Number,
         },
-        stream_link:{
-            required: true,
-            type:String,
-        },
-    }
+    },
+    stream_link:{
+        required: true,
+        type:String,
+    },
 });
 module.exports = mongoose.model('Signal',signalSchema);
